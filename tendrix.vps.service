@@ -1,0 +1,17 @@
+[Unit]
+Description=Tendrix Backend (VPS)
+After=network.target
+
+[Service]
+User=root
+WorkingDirectory=/root/fz_parser
+EnvironmentFile=-/root/fz_parser/.env
+ExecStartPre=/bin/sh -c 'fuser -k 8080/tcp 2>/dev/null; sleep 2; true'
+ExecStart=/root/fz_parser/.venv/bin/python -m uvicorn main:app --host 0.0.0.0 --port 8080 --app-dir /root/fz_parser
+Restart=always
+RestartSec=3
+StandardOutput=append:/root/fz_parser/backend.log
+StandardError=append:/root/fz_parser/backend.log
+
+[Install]
+WantedBy=multi-user.target

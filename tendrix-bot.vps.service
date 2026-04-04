@@ -1,0 +1,15 @@
+[Unit]
+Description=Tendrix Telegram Bot (VPS)
+After=network.target tendrix.service
+
+[Service]
+User=root
+WorkingDirectory=/root/fz_parser
+ExecStart=/root/fz_parser/.venv/bin/python /root/fz_parser/bot.py
+Restart=always
+RestartSec=5
+StandardOutput=append:/root/fz_parser/bot.log
+StandardError=append:/root/fz_parser/bot.log
+
+[Install]
+WantedBy=multi-user.target

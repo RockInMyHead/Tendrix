@@ -1,0 +1,301 @@
+{
+  "sources": [
+    {
+      "name": "ЕИС (zakupki.gov.ru)",
+      "url": "https://zakupki.gov.ru",
+      "parser_type": "html",
+      "category": "eis",
+      "selectors": {
+        "container": "table tbody tr, .tender-item, .lot-item"
+      }
+    },
+    {
+      "name": "Сбербанк-АСТ",
+      "url": "https://www.sberbank-ast.ru",
+      "parser_type": "html",
+      "category": "etp",
+      "selectors": {
+        "container": ".tender-item, .lot-item, table tbody tr"
+      }
+    },
+    {
+      "name": "Росэлторг",
+      "url": "https://www.roseltorg.ru",
+      "parser_type": "html",
+      "category": "etp",
+      "selectors": {
+        "container": ".tender-item, .lot-item, table tbody tr"
+      }
+    },
+    {
+      "name": "РТС-тендер",
+      "url": "https://www.rts-tender.ru",
+      "parser_type": "html",
+      "category": "etp",
+      "selectors": {
+        "container": ".tender-item, .lot-item, table tbody tr"
+      }
+    },
+    {
+      "name": "ЭТП Газпромбанка",
+      "url": "https://etpgpb.ru",
+      "parser_type": "html",
+      "category": "etp",
+      "selectors": {
+        "container": ".tender-item, .lot-item, table tbody tr"
+      }
+    },
+    {
+      "name": "Национальная электронная площадка (ЭТП ММВБ)",
+      "url": "https://www.etp-ets.ru",
+      "parser_type": "html",
+      "category": "etp",
+      "selectors": {
+        "container": ".tender-item, .lot-item, table tbody tr"
+      }
+    },
+    {
+      "name": "РАД (Lot-Online)",
+      "url": "https://gz.lot-online.ru",
+      "parser_type": "html",
+      "category": "etp",
+      "selectors": {
+        "container": ".tender-item, .lot-item, table tbody tr"
+      }
+    },
+    {
+      "name": "ЗаказРФ (АГЗРТ)",
+      "url": "https://etp.zakazrf.ru",
+      "parser_type": "html",
+      "category": "etp",
+      "selectors": {
+        "container": ".tender-item, .lot-item, table tbody tr"
+      }
+    },
+    {
+      "name": "ТЭК-Торг",
+      "url": "https://www.tektorg.ru",
+      "parser_type": "html",
+      "category": "etp",
+      "selectors": {
+        "container": ".tender-item, .lot-item, table tbody tr"
+      }
+    },
+    {
+      "name": "АСТ ГОЗ (гособоронзаказ)",
+      "url": "https://astgoz.ru",
+      "parser_type": "html",
+      "category": "etp",
+      "selectors": {
+        "container": ".tender-item, .lot-item, table tbody tr"
+      }
+    },
+    {
+      "name": "Портал поставщиков Москвы",
+      "url": "https://zakupki.mos.ru",
+      "parser_type": "html",
+      "category": "small",
+      "selectors": {
+        "container": ".tender-item, .lot-item, table tbody tr"
+      }
+    },
+    {
+      "name": "Единый агрегатор торговли «Берёзка»",
+      "url": "https://agregatoreat.ru",
+      "parser_type": "html",
+      "category": "small",
+      "selectors": {
+        "container": ".tender-item, .lot-item, table tbody tr"
+      }
+    },
+    {
+      "name": "Электронный магазин Московской области",
+      "url": "https://market.mosreg.ru",
+      "parser_type": "html",
+      "category": "small",
+      "selectors": {
+        "container": ".tender-item, .lot-item, table tbody tr"
+      }
+    },
+    {
+      "name": "Электронный магазин Санкт-Петербурга",
+      "url": "https://estore.gz-spb.ru",
+      "parser_type": "html",
+      "category": "small",
+      "selectors": {
+        "container": ".tender-item, .lot-item, table tbody tr"
+      }
+    },
+    {
+      "name": "Республика Алтай",
+      "url": "https://zakupki-altai.ru",
+      "parser_type": "html",
+      "category": "regional",
+      "selectors": {
+        "container": ".tender-item, .lot-item, table tbody tr"
+      }
+    },
+    {
+      "name": "Республика Бурятия",
+      "url": "https://burzakup.ru",
+      "parser_type": "html",
+      "category": "regional",
+      "selectors": {
+        "container": ".tender-item, .lot-item, table tbody tr"
+      }
+    },
+    {
+      "name": "Вологодская область",
+      "url": "https://gz.gov35.ru",
+      "parser_type": "html",
+      "category": "regional",
+      "selectors": {
+        "container": ".tender-item, .lot-item, table tbody tr"
+      }
+    },
+    {
+      "name": "B2B-Center",
+      "url": "https://www.b2b-center.ru",
+      "parser_type": "html",
+      "category": "commercial",
+      "selectors": {
+        "container": ".tender-item, .lot-item, table tbody tr"
+      }
+    },
+    {
+      "name": "Фабрикант",
+      "url": "https://www.fabrikant.ru",
+      "parser_type": "html",
+      "category": "commercial",
+      "selectors": {
+        "container": ".tender-item, .lot-item, table tbody tr"
+      }
+    },
+    {
+      "name": "OTC.RU",
+      "url": "https://otc.ru",
+      "parser_type": "html",
+      "category": "commercial",
+      "selectors": {
+        "container": ".tender-item, .lot-item, table tbody tr"
+      }
+    },
+    {
+      "name": "Tender.Pro",
+      "url": "https://tender.pro",
+      "parser_type": "html",
+      "category": "commercial",
+      "selectors": {
+        "container": ".tender-item, .lot-item, table tbody tr"
+      }
+    },
+    {
+      "name": "OnlineContract",
+      "url": "https://onlinecontract.ru",
+      "parser_type": "html",
+      "category": "commercial",
+      "selectors": {
+        "container": ".tender-item, .lot-item, table tbody tr"
+      }
+    },
+    {
+      "name": "ERUS",
+      "url": "https://erus.ru",
+      "parser_type": "html",
+      "category": "commercial",
+      "selectors": {
+        "container": ".tender-item, .lot-item, table tbody tr"
+      }
+    },
+    {
+      "name": "SETonline",
+      "url": "https://www.setonline.ru",
+      "parser_type": "html",
+      "category": "commercial",
+      "selectors": {
+        "container": ".tender-item, .lot-item, table tbody tr"
+      }
+    },
+    {
+      "name": "RB2B",
+      "url": "https://rb2b.ru",
+      "parser_type": "html",
+      "category": "commercial",
+      "selectors": {
+        "container": ".tender-item, .lot-item, table tbody tr"
+      }
+    },
+    {
+      "name": "Роснефть",
+      "url": "https://zakupki.rosneft.ru",
+      "parser_type": "html",
+      "category": "corporate",
+      "selectors": {
+        "container": ".tender-item, .lot-item, table tbody tr"
+      }
+    },
+    {
+      "name": "Газпром",
+      "url": "https://www.gazprom.ru/tenders",
+      "parser_type": "html",
+      "category": "corporate",
+      "selectors": {
+        "container": ".tender-item, .lot-item, table tbody tr"
+      }
+    },
+    {
+      "name": "Газпром нефть",
+      "url": "https://zakupki.gazprom-neft.ru",
+      "parser_type": "html",
+      "category": "corporate",
+      "selectors": {
+        "container": ".tender-item, .lot-item, table tbody tr"
+      }
+    },
+    {
+      "name": "Транснефть",
+      "url": "https://www.spbex.ru",
+      "parser_type": "html",
+      "category": "corporate",
+      "selectors": {
+        "container": ".tender-item, .lot-item, table tbody tr"
+      }
+    },
+    {
+      "name": "РЖД",
+      "url": "https://eshoprzd.ru",
+      "parser_type": "html",
+      "category": "corporate",
+      "selectors": {
+        "container": ".tender-item, .lot-item, table tbody tr"
+      }
+    },
+    {
+      "name": "Северсталь",
+      "url": "https://supplier.severstal.com",
+      "parser_type": "html",
+      "category": "corporate",
+      "selectors": {
+        "container": ".tender-item, .lot-item, table tbody tr"
+      }
+    },
+    {
+      "name": "Евраз",
+      "url": "https://tender.evraz.com",
+      "parser_type": "html",
+      "category": "corporate",
+      "selectors": {
+        "container": ".tender-item, .lot-item, table tbody tr"
+      }
+    },
+    {
+      "name": "Татнефть",
+      "url": "https://zakupki.tatneft.ru",
+      "parser_type": "html",
+      "category": "corporate",
+      "selectors": {
+        "container": ".tender-item, .lot-item, table tbody tr"
+      }
+    }
+  ]
+}

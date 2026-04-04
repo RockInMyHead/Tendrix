@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход - Tendrix</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .auth-container {
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 2rem;
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .auth-tab.active {
+            color: var(--accent);
+            border-bottom: 2px solid var(--accent);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.5rem;
+            color: var(--text-primary);
+            font-family: inherit;
+        }
+
+        .auth-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .auth-btn:hover {
+            filter: brightness(1.1);
+            transform: translateY(-1px);
+        }
+
+        #error-msg {
+            color: #ef4444;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            text-align: center;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="background-beams"></div>
+
+    <div class="auth-container">
+        <h2 style="text-align: center; margin-bottom: 2rem; font-weight: 700;">Tendrix</h2>
+
+        <div class="auth-tabs">
+            <div class="auth-tab active" onclick="switchTab('login')">Вход</div>
+            <div class="auth-tab" onclick="switchTab('register')">Регистрация</div>
+        </div>
+
+        <form id="authForm" onsubmit="handleAuth(event)">
+            <div class="form-group">
+                <label>Логин</label>
+                <input type="text" id="username" required placeholder="admin">
+            </div>
+            <div class="form-group">
+                <label>Пароль</label>
+                <input type="password" id="password" required placeholder="••••••••">
+            </div>
+            <button type="submit" class="auth-btn" id="submitBtn">Войти</button>
+            <div id="error-msg"></div>
+        </form>
+    </div>
+
+    <script>
+        let isLogin = true;
+
+        function switchTab(mode) {
+            isLogin = mode === 'login';
+            document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById('submitBtn').textContent = isLogin ? 'Войти' : 'Зарегистрироваться';
+            document.getElementById('error-msg').style.display = 'none';
+        }
+
+        async function handleAuth(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('error-msg');
+
+            try {
+                let url, body;
+
+                if (isLogin) {
+                    url = '/token';
+                    // OAuth2 form data
+                    const formData = new URLSearchParams();
+                    formData.append('username', username);
+                    formData.append('password', password);
+                    body = formData;
+                    headers = { 'Content-Type': 'application/x-www-form-urlencoded' };
+                } else {
+                    url = '/register';
+                    body = JSON.stringify({ username, password });
+                    headers = { 'Content-Type': 'application/json' };
+                }
+
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: headers,
+                    body: body
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.detail || 'Ошибка авторизации');
+                }
+
+                localStorage.setItem('access_token', data.access_token);
+                window.location.href = '/'; // Go to dashboard
+            } catch (err) {
+                errorDiv.textContent = err.message;
+                errorDiv.style.display = 'block';
+            }
+        }
+    </script>
+</body>
+
+</html>

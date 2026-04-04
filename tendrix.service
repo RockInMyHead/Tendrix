@@ -1,0 +1,17 @@
+[Unit]
+Description=Tendrix Backend Service
+After=network.target
+
+[Service]
+User=user1
+WorkingDirectory=/home/user1/fz_parser
+EnvironmentFile=/home/user1/fz_parser/.env
+ExecStartPre=/bin/sh -c 'fuser -k 8080/tcp 2>/dev/null; sleep 2; true'
+ExecStart=/usr/bin/python3 -m uvicorn main:app --host 0.0.0.0 --port 8080 --app-dir /home/user1/fz_parser
+Restart=always
+RestartSec=3
+StandardOutput=append:/home/user1/fz_parser/backend.log
+StandardError=append:/home/user1/fz_parser/backend.log
+
+[Install]
+WantedBy=multi-user.target
