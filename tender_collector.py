@@ -67,7 +67,23 @@ class TenderCollector:
             print(f"Файл конфигурации {config_file} не найден.")
         except Exception as e:
             print(f"Ошибка при загрузке конфигурации: {e}")
-    
+
+    def load_sources_from_registry(self, entries: Optional[List[Dict]] = None) -> None:
+        """Источники из кода: tender_sources_registry.COLLECTOR_SOURCES (основной режим для продакшена)."""
+        from tender_sources_registry import COLLECTOR_SOURCES
+
+        self.tender_sources = []
+        for source in entries or COLLECTOR_SOURCES:
+            self.add_source(
+                source["name"],
+                source["url"],
+                source.get("parser_type", "html"),
+                source.get("category", "other"),
+                source.get("rss_url"),
+                source.get("selectors", {}),
+            )
+        print(f"Загружено {len(self.tender_sources)} источников из реестра (код)")
+
     def parse_rss_tenders(self, source: Dict) -> List[Dict]:
         """Парсинг тендеров из RSS/Atom фида"""
         try:

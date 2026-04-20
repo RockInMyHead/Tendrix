@@ -27,6 +27,8 @@ class User(Base):
     email = Column(String, nullable=True)
     email_verified = Column(Boolean, default=False)
     email_verification_token = Column(String, nullable=True, index=True)
+    # Суммарно потраченные токены OpenAI (prompt+completion по ответам API)
+    openai_tokens_total = Column(Integer, default=0, nullable=True)
 
 class Tender(Base):
     __tablename__ = "tenders"
@@ -65,6 +67,19 @@ class PromoCode(Base):
     code = Column(String, unique=True, index=True)
     is_active = Column(Boolean, default=True)
     description = Column(String, nullable=True)
+
+
+class RegistrationEmailPending(Base):
+    """Ожидание верификации email до создания учётной записи (код → completion_token → /register)."""
+    __tablename__ = "registration_email_pending"
+
+    id = Column(Integer, primary_key=True, index=True)
+    email = Column(String, unique=True, index=True)
+    code = Column(String, nullable=False)
+    expires_at = Column(DateTime, nullable=False)
+    completion_token = Column(String, unique=True, index=True, nullable=True)
+    completion_expires_at = Column(DateTime, nullable=True)
+
 
 def init_db():
     Base.metadata.create_all(bind=engine)

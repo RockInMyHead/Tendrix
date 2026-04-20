@@ -19,8 +19,17 @@ def _get_smtp_config():
     }
 
 
+def _smtp_configured(cfg: dict) -> bool:
+    if cfg["password"]:
+        return True
+    print(
+        "[Email] Отправка невозможна: не задан SMTP_PASSWORD "
+        "(пароль приложения почты; см. .env.example)."
+    )
+    return False
+
+
 def _smtp_send(cfg: dict, to_email: str, message: str) -> None:
-    """465 — SMTP_SSL; 587 — STARTTLS (как у Yandex при «без шифрования»)."""
     context = ssl.create_default_context()
     host = cfg["host"]
     port = cfg["port"]
@@ -40,7 +49,7 @@ def _smtp_send(cfg: dict, to_email: str, message: str) -> None:
 def send_verification_code_email(to_email: str, username: str, code: str) -> bool:
     """Отправить 6-значный код подтверждения email."""
     cfg = _get_smtp_config()
-    if not cfg["password"]:
+    if not _smtp_configured(cfg):
         return False
 
     msg = MIMEMultipart("alternative")
@@ -77,6 +86,13 @@ def send_verification_code_email(to_email: str, username: str, code: str) -> boo
     try:
         _smtp_send(cfg, to_email, msg.as_string())
         return True
+    except smtplib.SMTPAuthenticationError as e:
+        print(
+            "[Email] SMTP: отказ в авторизации (535). Проверьте SMTP_EMAIL и "
+            "SMTP_PASSWORD — нужен пароль приложения Яндекс.Почты, не обычный пароль."
+        )
+        print(f"[Email] Детали: {e}")
+        return False
     except Exception as e:
         print(f"[Email] Ошибка отправки кода: {e}")
         return False
@@ -85,7 +101,7 @@ def send_verification_code_email(to_email: str, username: str, code: str) -> boo
 def send_verification_email(to_email: str, username: str, verify_url: str) -> bool:
     """Отправить письмо с ссылкой для верификации email."""
     cfg = _get_smtp_config()
-    if not cfg["password"]:
+    if not _smtp_configured(cfg):
         return False
 
     msg = MIMEMultipart("alternative")
@@ -120,6 +136,13 @@ def send_verification_email(to_email: str, username: str, verify_url: str) -> bo
     try:
         _smtp_send(cfg, to_email, msg.as_string())
         return True
+    except smtplib.SMTPAuthenticationError as e:
+        print(
+            "[Email] SMTP: отказ в авторизации (535). Проверьте SMTP_EMAIL и "
+            "SMTP_PASSWORD (пароль приложения Яндекс.Почты)."
+        )
+        print(f"[Email] Детали: {e}")
+        return False
     except Exception as e:
         print(f"[Email] Ошибка отправки: {e}")
         return False

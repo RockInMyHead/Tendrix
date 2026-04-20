@@ -5,6 +5,7 @@ After=network.target tendrix.service
 [Service]
 User=root
 WorkingDirectory=/root/fz_parser
+EnvironmentFile=-/root/fz_parser/.env
 ExecStart=/root/fz_parser/.venv/bin/python /root/fz_parser/bot.py
 Restart=always
 RestartSec=5

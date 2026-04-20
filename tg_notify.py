@@ -1,12 +1,19 @@
 """
 Отправка в Telegram только тендеров, опубликованных в текущий момент
 (активные, срок подачи в будущем). Без эмодзи, аккуратный формат со ссылкой.
+
+Получатели:
+- без Pro: все подходящие тендеры;
+- Pro: только если тендер совпадает с «запросом» — описанием компании из профиля
+  (те же смысловые ключевые слова, что и для поиска на сайте; минимум ~10 символов).
 """
 import threading
 import time
 import logging
+import re
 from queue import Queue, Empty
 from datetime import datetime
+from typing import List, Optional, Tuple
 
 try:
     import requests
@@ -94,7 +101,18 @@ def _format_price(price, currency):
         return str(price) if price else "—"
 
 
-def _format_tender_message(number, subject, price, currency, customer, region, update_date, link, procurement_type):
+def _format_tender_message(
+    number,
+    subject,
+    price,
+    currency,
+    customer,
+    region,
+    update_date,
+    link,
+    procurement_type,
+    tendrix_username: Optional[str] = None,
+):
     """Формирует текст сообщения без эмодзи."""
     price_str = _format_price(price, currency)
     subject_short = (subject or "—")[:200]
@@ -105,17 +123,23 @@ def _format_tender_message(number, subject, price, currency, customer, region, u
     date_str = update_date or "—"
     proc_str = procurement_type or "—"
 
-    lines = [
-        "Новый тендер",
-        "",
-        f"Название: {subject_short}",
-        f"Заказчик: {customer_short}",
-        f"Цена: {price_str}",
-        f"Регион: {region_str}",
-        f"Срок: {date_str}",
-        f"Тип: {proc_str}",
-        "",
-    ]
+    lines = []
+    if tendrix_username:
+        lines.append(f"Уведомление для аккаунта Tendrix: {tendrix_username}")
+        lines.append("")
+    lines.extend(
+        [
+            "Новый тендер",
+            "",
+            f"Название: {subject_short}",
+            f"Заказчик: {customer_short}",
+            f"Цена: {price_str}",
+            f"Регион: {region_str}",
+            f"Срок: {date_str}",
+            f"Тип: {proc_str}",
+            "",
+        ]
+    )
     text = "\n".join(lines)
     if link:
         text += f"\n{link}"
@@ -149,13 +173,96 @@ def _send_to_telegram(chat_id: int, text: str) -> bool:
         return False
 
 
-def _get_telegram_users():
-    """Возвращает список chat_id пользователей, привязавших Telegram."""
+_STOP_WORDS = frozenset(
+    """
+    и в во на не с со по за из к у о об от до при для без над под про что как эта
+    или же ли бы мы вы их им все этот это том тех
+    the and for are but not you all can her was one our out
+    """.split()
+)
+
+
+def _keywords_from_company_description(description: str):
+    """Токены из описания компании для сопоставления с тендером (без вызова LLM)."""
+    if not description or not isinstance(description, str):
+        return []
+    low = description.lower()
+    raw = re.findall(r"[\w]{3,}", low, flags=re.UNICODE)
+    out = []
+    for w in raw:
+        if w in _STOP_WORDS or len(w) < 4:
+            continue
+        out.append(w)
+    if out:
+        return out
+    # fallback: длинные фрагменты (например слитный текст)
+    for part in re.split(r"[\s,;.!?:\-_/\\]+", low):
+        p = part.strip()
+        if len(p) >= 5 and p not in _STOP_WORDS:
+            out.append(p)
+    return out[:20]
+
+
+def _description_matches_tender(company_description: str, haystack_lower: str) -> bool:
+    if not company_description or len(company_description.strip()) < 11:
+        return False
+    for kw in _keywords_from_company_description(company_description):
+        if kw in haystack_lower:
+            return True
+    return False
+
+
+def _account_label(user) -> str:
+    """Подпись пользователя в тексте уведомления."""
+    un = (getattr(user, "username", None) or "").strip()
+    if un:
+        return un
+    em = (getattr(user, "email", None) or "").strip()
+    if em:
+        return em
+    tid = getattr(user, "telegram_id", None)
+    return f"id{tid}" if tid is not None else "пользователь"
+
+
+def _resolve_telegram_recipients(subject, customer, number) -> List[Tuple[int, str]]:
+    """
+    Кому слать уведомление об этом тендере:
+    не-Pro — всем привязавшим TG; Pro — только если описание из профиля пересекается с тендером.
+    Возвращает список (telegram_chat_id, подпись для текста сообщения).
+    """
     try:
         from database import SessionLocal, User
+
+        hay = " ".join(
+            x for x in (subject or "", customer or "", number or "") if x
+        ).lower()
+        out: List[Tuple[int, str]] = []
         with SessionLocal() as db:
-            users = db.query(User.telegram_id).filter(User.telegram_id.isnot(None)).all()
-            return [u[0] for u in users if u[0]]
+            for u in db.query(User).filter(User.telegram_id.isnot(None)).all():
+                tid = u.telegram_id
+                if tid is None:
+                    continue
+                label = _account_label(u)
+                if not getattr(u, "is_pro", False):
+                    out.append((tid, label))
+                    continue
+                desc = (u.company_description or "").strip()
+                if _description_matches_tender(desc, hay):
+                    out.append((tid, label))
+        return out
+    except Exception as e:
+        logger.warning(f"Failed to resolve telegram recipients: {e}")
+        return []
+
+
+def _get_telegram_recipients() -> List[Tuple[int, str]]:
+    """Все привязавшие Telegram: (chat_id, подпись аккаунта)."""
+    try:
+        from database import SessionLocal, User
+
+        with SessionLocal() as db:
+            users = db.query(User).filter(User.telegram_id.isnot(None)).all()
+            return [(u.telegram_id, _account_label(u)) for u in users if u.telegram_id]
     except Exception as e:
         logger.warning(f"Failed to get telegram users: {e}")
         return []
@@ -167,12 +274,31 @@ def _worker():
             item = _tender_queue.get(timeout=5)
             if item is None:
                 break
-            chat_ids = list(item.get("chat_ids") or [])
+            deliveries = item.get("deliveries")
+            if deliveries:
+                for d in deliveries:
+                    cid = d.get("chat_id")
+                    txt = d.get("text", "")
+                    if cid is None or not txt:
+                        continue
+                    _send_to_telegram(int(cid), txt)
+                    time.sleep(SEND_DELAY)
+                continue
+            raw_ids = item.get("chat_ids")
+            if raw_ids is None:
+                recipients = _get_telegram_recipients()
+                base_text = item.get("text", "")
+                if not base_text:
+                    continue
+                for cid, label in recipients:
+                    header = f"Уведомление для аккаунта Tendrix: {label}\n\n"
+                    _send_to_telegram(cid, header + base_text)
+                    time.sleep(SEND_DELAY)
+                continue
+            chat_ids = list(raw_ids)
+            text = item.get("text", "")
             if not chat_ids and TELEGRAM_CHANNEL_ID:
                 chat_ids = [TELEGRAM_CHANNEL_ID]
-            if not chat_ids:
-                chat_ids = _get_telegram_users()
-            text = item.get("text", "")
             if not text or not chat_ids:
                 continue
             for cid in chat_ids:
@@ -199,11 +325,40 @@ def queue_new_tender(number, subject, price, currency, customer, region, update_
         return  # аукцион уже закончился — не отправляем
     if not _is_active_stage(stage):
         return  # заключение контракта / размещён в реестре / исполнение — не отправляем
-    text = _format_tender_message(
-        number, subject, price, currency, customer, region, update_date, link, procurement_type
-    )
+    recipients = _resolve_telegram_recipients(subject, customer, number)
+    deliveries = []
+    for tid, label in recipients:
+        text = _format_tender_message(
+            number,
+            subject,
+            price,
+            currency,
+            customer,
+            region,
+            update_date,
+            link,
+            procurement_type,
+            tendrix_username=label,
+        )
+        deliveries.append({"chat_id": tid, "text": text})
+    if not deliveries and TELEGRAM_CHANNEL_ID:
+        text = _format_tender_message(
+            number,
+            subject,
+            price,
+            currency,
+            customer,
+            region,
+            update_date,
+            link,
+            procurement_type,
+            tendrix_username=None,
+        )
+        deliveries = [{"chat_id": TELEGRAM_CHANNEL_ID, "text": text}]
+    if not deliveries:
+        return
     _ensure_worker()
-    _tender_queue.put({"text": text, "chat_ids": None})
+    _tender_queue.put({"deliveries": deliveries})
 
 
 def sync_currently_published_tenders(limit=50):

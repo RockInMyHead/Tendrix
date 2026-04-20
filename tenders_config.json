@@ -1,4 +1,5 @@
 {
+  "_readme": "Продакшен: список площадок для TenderCollector задаётся в tender_sources_registry.py (код). Этот JSON — копия для справки.",
   "sources": [
     {
       "name": "ЕИС (zakupki.gov.ru)",

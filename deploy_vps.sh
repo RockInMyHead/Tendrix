@@ -1,9 +1,17 @@
 #!/bin/bash
-# Деплой на VPS root@159.194.213.30 (ключ ~/.ssh/id_ed25519_vps)
+# Деплой на VPS root@159.194.208.38 (ключ ~/.ssh/id_ed25519_vps)
 set -euo pipefail
 
-SERVER="root@159.194.213.30"
-SSH_KEY="${SSH_KEY:-$HOME/.ssh/id_ed25519_vps}"
+SERVER="root@159.194.208.38"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+# Явный SSH_KEY, иначе key/pkey1 в корне проекта, иначе ~/.ssh/id_ed25519_vps
+if [ -n "${SSH_KEY:-}" ]; then
+  :
+elif [ -f "$SCRIPT_DIR/key/pkey1" ]; then
+  SSH_KEY="$SCRIPT_DIR/key/pkey1"
+else
+  SSH_KEY="${HOME}/.ssh/id_ed25519_vps"
+fi
 REMOTE_DIR="/root/fz_parser"
 
 SSH=(ssh -i "$SSH_KEY" -o StrictHostKeyChecking=accept-new)
@@ -20,8 +28,9 @@ cp -r temp_frontend/dist/* static/
 
 echo "=== 3. Синхронизация на сервер ==="
 "${RSYNC[@]}" --exclude='.git' --exclude='__pycache__' --exclude='*.pyc' \
-  --exclude='sql_app.db' --exclude='node_modules' --exclude='temp_frontend' \
-  --exclude='fz_parser 2' --exclude='.env' --exclude='.venv' \
+  --exclude='sql_app.db' --exclude='sql_app.db-wal' --exclude='sql_app.db-shm' \
+  --exclude='node_modules' --exclude='temp_frontend' \
+  --exclude='fz_parser 2' --exclude='.env' --exclude='.venv' --exclude='key' \
   ./ "$SERVER:$REMOTE_DIR/"
 
 echo "=== 4. Зависимости, systemd, запуск ==="
@@ -53,9 +62,9 @@ systemctl restart tendrix
 sleep 2
 systemctl restart tendrix-bot
 sleep 1
-systemctl status tendrix --no-pager
+systemctl status tendrix --no-pager || true
 echo "---"
-systemctl status tendrix-bot --no-pager
+systemctl status tendrix-bot --no-pager || true
 REMOTE
 
-echo "=== Готово: https://tendrix.io (если DNS указывает на этот IP) или http://159.194.213.30:8080 ==="
+echo "=== Готово: https://tendrix.io (если DNS указывает на этот IP) или http://159.194.208.38:8080 ==="

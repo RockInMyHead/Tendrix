@@ -3,6 +3,9 @@
 .env.local
 *.pem
 
+# SSH private keys (PuTTY / OpenSSH)
+key/
+
 # SQLite
 *.db
 *.db-shm
@@ -28,6 +31,9 @@ temp_frontend/node_modules/
 .idea/
 .vscode/
 .cursor/
+
+# Background daemon (nohup)
+logs/
 
 # Archives / deploy artifacts
 *.tar.gz
