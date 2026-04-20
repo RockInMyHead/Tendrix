@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Чак VC — прямая линия</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="icon" type="image/png" href="favicon-96x96.png" sizes="96x96" />
+    <link rel="apple-touch-icon" href="apple-touch-icon.png" sizes="180x180" />
+    <link rel="icon" href="favicon.ico" sizes="any" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* Визуальный язык в духе https://4ak.vc/ — светлый фон, teal #169db0, скругления xl */
+      :root {
+        --teal: #169db0;
+        --teal-hover: #0f7a8a;
+        --teal-soft: #e6f7fa;
+        --teal-ring: rgba(22, 157, 176, 0.35);
+        --neutral-dark: #262626;
+        --neutral-dark-hover: #171717;
+        --bg-page: #f3f4f6;
+        --bg-card: #ffffff;
+        --border: #e5e7eb;
+        --border-strong: #d1d5db;
+        --text: #111827;
+        --text-secondary: #4b5563;
+        --muted: #6b7280;
+        --bot-bubble: #ffffff;
+        --user-bubble: var(--teal-soft);
+        --shadow: 0 1px 3px rgba(17, 24, 39, 0.06);
+        --shadow-lg: 0 10px 40px -10px rgba(17, 24, 39, 0.12);
+        --font: "Manrope", "TT Firs Neue", system-ui, -apple-system, sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: var(--font);
+        background: var(--bg-page);
+        color: var(--text);
+      }
+
+      #root {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 1.25rem 1rem 2rem;
+      }
+
+      .app-card {
+        width: 100%;
+        max-width: 560px;
+        background: var(--bg-card);
+        border-radius: 1rem;
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow-lg);
+        display: flex;
+        flex-direction: column;
+        min-height: min(88vh, 720px);
+        max-height: 92vh;
+        overflow: hidden;
+      }
+
+      .header {
+        padding: 1rem 1.25rem 1rem;
+        border-bottom: 1px solid var(--border);
+        background: linear-gradient(180deg, #fff 0%, #fafafa 100%);
+      }
+
+      .header-top {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      .header-logo {
+        width: 44px;
+        height: 44px;
+        flex-shrink: 0;
+      }
+
+      .header-text h1 {
+        margin: 0;
+        font-size: 1.125rem;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+        color: var(--text);
+      }
+
+      .header-text p {
+        margin: 0.2rem 0 0;
+        font-size: 0.8125rem;
+        font-weight: 400;
+        color: var(--muted);
+        line-height: 1.4;
+      }
+
+      .chat {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1rem 1.25rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        background: #fafafa;
+      }
+
+      .msg {
+        max-width: 92%;
+        padding: 0.85rem 1rem;
+        border-radius: 0.75rem;
+        line-height: 1.5;
+        font-size: 0.9375rem;
+        font-weight: 400;
+        animation: fadeIn 0.25s ease;
+        box-shadow: var(--shadow);
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(6px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .msg.bot {
+        align-self: flex-start;
+        background: var(--bot-bubble);
+        border: 1px solid var(--border);
+        white-space: pre-wrap;
+      }
+
+      .msg.user {
+        align-self: flex-end;
+        background: var(--user-bubble);
+        border: 1px solid #b8e4eb;
+        color: var(--text);
+      }
+
+      .msg .label {
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-weight: 600;
+        color: var(--muted);
+        margin-bottom: 0.4rem;
+      }
+
+      .msg.bot .label {
+        color: var(--teal);
+      }
+
+      .composer-wrap {
+        padding: 0.75rem 1.25rem 1.25rem;
+        border-top: 1px solid var(--border);
+        background: #fff;
+      }
+
+      .composer {
+        display: flex;
+        gap: 0.5rem;
+        align-items: flex-end;
+      }
+
+      .composer.disabled {
+        opacity: 0.55;
+        pointer-events: none;
+      }
+
+      .composer textarea {
+        flex: 1;
+        min-height: 46px;
+        max-height: 120px;
+        resize: vertical;
+        padding: 0.65rem 0.9rem;
+        border-radius: 0.75rem;
+        border: 1px solid var(--border-strong);
+        background: #fff;
+        color: var(--text);
+        font: inherit;
+        line-height: 1.45;
+      }
+
+      .composer textarea:focus {
+        outline: none;
+        border-color: var(--teal);
+        box-shadow: 0 0 0 3px var(--teal-ring);
+      }
+
+      .composer textarea::placeholder {
+        color: #9ca3af;
+      }
+
+      .composer .btn-send {
+        padding: 0.65rem 1.15rem;
+        border-radius: 0.75rem;
+        border: none;
+        background: var(--teal);
+        color: #fff;
+        font: inherit;
+        font-weight: 600;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: background 0.15s, transform 0.15s;
+      }
+
+      .composer .btn-send:hover:not(:disabled) {
+        background: var(--teal-hover);
+      }
+
+      .composer .btn-send:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+      }
+
+      .hint {
+        font-size: 0.8rem;
+        color: var(--muted);
+        margin-top: 0.5rem;
+        padding: 0 0.15rem;
+      }
+
+      .role-buttons {
+        align-self: stretch;
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+        max-width: 100%;
+        width: 100%;
+        padding: 0.35rem 0 0.25rem;
+      }
+
+      .role-buttons .role-btn {
+        text-align: left;
+        padding: 0.85rem 1.1rem;
+        border-radius: 0.75rem;
+        font: inherit;
+        font-size: 0.9375rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s, background 0.15s,
+          border-color 0.15s;
+        border: none;
+      }
+
+      .role-btn--startup {
+        background: var(--teal);
+        color: #fff;
+        box-shadow: 0 2px 8px rgba(22, 157, 176, 0.35);
+      }
+
+      .role-btn--startup:hover {
+        background: var(--teal-hover);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 14px rgba(22, 157, 176, 0.4);
+      }
+
+      .role-btn--investor {
+        background: var(--neutral-dark);
+        color: #fff;
+        box-shadow: 0 2px 8px rgba(38, 38, 38, 0.2);
+      }
+
+      .role-btn--investor:hover {
+        background: var(--neutral-dark-hover);
+        transform: translateY(-1px);
+      }
+
+      .role-btn--partner {
+        background: #fff;
+        color: var(--text);
+        border: 2px solid var(--border-strong) !important;
+      }
+
+      .role-btn--partner:hover {
+        border-color: var(--teal) !important;
+        transform: translateY(-1px);
+        box-shadow: var(--shadow);
+      }
+
+      .role-buttons .role-btn:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .composer-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        align-items: center;
+        margin-top: 0.5rem;
+      }
+
+      .composer-row button.secondary {
+        background: #fff;
+        border: 1px solid var(--border-strong);
+        color: var(--text-secondary);
+        font-weight: 500;
+        padding: 0.5rem 0.85rem;
+        border-radius: 0.75rem;
+        font: inherit;
+        cursor: pointer;
+        transition: border-color 0.15s, color 0.15s;
+      }
+
+      .composer-row button.secondary:hover:not(:disabled) {
+        border-color: var(--teal);
+        color: var(--teal);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script
+      crossorigin
+      src="https://unpkg.com/react@18/umd/react.development.js"
+    ></script>
+    <script
+      crossorigin
+      src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"
+    ></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <script type="text/babel">
+      const { useState, useEffect, useRef, useCallback } = React;
+
+      const INTRO_TEXT =
+        "👋 Вы на прямой линии с командой Венчурного фонда Чак VC.\n\n" +
+        "Мы инвестируем в российские технологические компании на стадиях pre-seed и seed — там, где особенно не хватает капитала. Наш приоритетный фокус: EdTech, MarTech, HR-Tech, FinTech и AI. Мы помогаем стартапам расти и сопровождаем их до следующего раунда или продажи.\n\n" +
+        "Что дальше?\n\n" +
+        "🦄 Если вы стартап — отправьте заявку, чтобы мы рассмотрели ваш проект.\n\n" +
+        "😎 Если вы инвестор — заполните анкету и присоединитесь к пулу фонда.\n\n" +
+        "🤝 Если вы партнёр — оставьте информацию о себе для обсуждения сотрудничества.\n\n" +
+        "💬 Для вопросов и уточнений — свяжитесь с нами.";
+
+      const ROLE_LABELS = {
+        startup: "🦄 Стартап",
+        investor: "😎 Инвестор",
+        partner: "🤝 Партнёр",
+      };
+
+      /** Короткие реплики между блоками вопросов (стартап). */
+      const STARTUP_OPENING =
+        "Отлично, заявку от стартапа примем с радостью. Дальше я задам вопросы по одному.";
+
+      const STARTUP_FILLERS = [
+        "Принято, спасибо.",
+        "Хорошо, записал.",
+        "Понял, двигаемся дальше.",
+        "Спасибо, это важно для первичного отбора.",
+      ];
+
+      const THANKS_STARTUP =
+        "Спасибо за заявку! Мы изучим материалы и свяжемся с вами, если проект подойдёт под тезис фонда. Удачи команде!";
+
+      const THANKS_INVESTOR =
+        "Спасибо! Анкета инвестора сохранена. Мы свяжемся с вами для уточнений по пулу фонда.";
+
+      const THANKS_PARTNER =
+        "Спасибо! Мы получили информацию о партнёрстве и вернёмся с обратной связью.";
+
+      const STARTUP_QUESTIONS = [
+        {
+          key: "fullName",
+          text: "Укажите ФИО контактного лица.",
+          placeholder: "Иванов Иван Иванович",
+        },
+        {
+          key: "email",
+          text: "Электронная почта для связи.",
+          placeholder: "name@company.ru",
+        },
+        {
+          key: "phone",
+          text: "Телефон (с кодом страны/города).",
+          placeholder: "+7 …",
+        },
+        {
+          key: "projectName",
+          text: "Как называется проект / компания?",
+          placeholder: "Название",
+        },
+        {
+          key: "description",
+          text: "Кратко опишите продукт, проблему и для кого вы её решаете.",
+          placeholder: "2–5 предложений",
+        },
+        {
+          key: "website",
+          text: "Сайт или лендинг (если нет — напишите «нет»).",
+          placeholder: "https://…",
+        },
+        {
+          key: "pitchDeck",
+          text: "Инвестиционная презентация: ссылка на файл (Google Drive, Notion и т.п.) или кратко опишите, где её прислать.",
+          placeholder: "Ссылка или комментарий",
+        },
+        {
+          key: "financialModel",
+          text: "Финансовая модель (необязательно). Можете приложить ссылку или нажать «Пропустить».",
+          placeholder: "Ссылка или «нет»",
+          optional: true,
+        },
+        {
+          key: "industry",
+          text: "Отрасль / вертикаль (EdTech, FinTech, AI и т.д.).",
+          placeholder: "Например: HR-Tech",
+        },
+        {
+          key: "inn",
+          text: "ИНН юридического лица (если есть).",
+          placeholder: "10 или 12 цифр",
+        },
+        {
+          key: "residency",
+          text: "Резидентство (Сколково, инновационный центр и т.п.) — если есть, укажите. Если нет — «нет».",
+          placeholder: "Сколково / нет",
+        },
+        {
+          key: "monthlyRevenue",
+          text: "Выручка в месяц сейчас (или MRR). Если нет — «0» или «pre-revenue».",
+          placeholder: "Например: 150 000 ₽",
+        },
+        {
+          key: "investmentAmount",
+          text: "Какой размер инвестиций вы привлекаете в этом раунде?",
+          placeholder: "Например: 15 млн ₽",
+        },
+        {
+          key: "investmentUse",
+          text: "На что планируете направить инвестиции (команда, продукт, маркетинг)?",
+          placeholder: "Кратко по статьям",
+        },
+        {
+          key: "existingInvestors",
+          text: "Уже есть инвесторы или гранты? Кратко опишите.",
+          placeholder: "Да / нет, детали",
+        },
+        {
+          key: "referralSource",
+          text: "Откуда вы узнали о фонде Чак VC?",
+          placeholder: "Рекомендация, мероприятие, соцсети…",
+        },
+      ];
+
+      const INVESTOR_QUESTIONS = [
+        {
+          key: "inv_fullName",
+          text: "ФИО",
+          placeholder: "Как к вам обращаться",
+        },
+        {
+          key: "inv_email",
+          text: "Email и телефон для связи.",
+          placeholder: "email, телефон",
+        },
+        {
+          key: "inv_profile",
+          text: "Кратко о вашем инвестиционном профиле (опыт, фокус).",
+          placeholder: "Текст",
+        },
+        {
+          key: "inv_ticket",
+          text: "Интересующий чек / объём участия в пуле (ориентир).",
+          placeholder: "Сумма или диапазон",
+        },
+      ];
+
+      const PARTNER_QUESTIONS = [
+        {
+          key: "par_org",
+          text: "Компания или проект, которую вы представляете.",
+          placeholder: "Название",
+        },
+        {
+          key: "par_contact",
+          text: "Контактное лицо и способ связи (email, телефон).",
+          placeholder: "ФИО, контакты",
+        },
+        {
+          key: "par_coop",
+          text: "Какое сотрудничество вы предлагаете фонду?",
+          placeholder: "Кратко",
+        },
+      ];
+
+      function pickFiller(index) {
+        return STARTUP_FILLERS[index % STARTUP_FILLERS.length];
+      }
+
+      function App() {
+        const [phase, setPhase] = useState("intro");
+        const [messages, setMessages] = useState([]);
+        const [stepIndex, setStepIndex] = useState(0);
+        const [input, setInput] = useState("");
+        const [finished, setFinished] = useState(false);
+        const [answers, setAnswers] = useState({});
+        const [questions, setQuestions] = useState([]);
+        const [roleChosen, setRoleChosen] = useState(false);
+        const bottomRef = useRef(null);
+
+        useEffect(() => {
+          setMessages([{ role: "bot", text: INTRO_TEXT }]);
+        }, []);
+
+        useEffect(() => {
+          bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+        }, [messages, phase, finished]);
+
+        const currentQuestion = questions[stepIndex];
+
+        const canSend =
+          !finished &&
+          currentQuestion &&
+          input.trim().length > 0;
+
+        const pushBot = useCallback((text, delay = 380) => {
+          return new Promise((resolve) => {
+            setTimeout(() => {
+              setMessages((prev) => [...prev, { role: "bot", text }]);
+              resolve();
+            }, delay);
+          });
+        }, []);
+
+        function beginFlow(flow) {
+          setRoleChosen(true);
+          const label = ROLE_LABELS[flow];
+          setMessages((prev) => [...prev, { role: "user", text: label }]);
+
+          if (flow === "startup") {
+            setQuestions(STARTUP_QUESTIONS);
+            setPhase("startup");
+            setStepIndex(0);
+            setTimeout(async () => {
+              await pushBot(STARTUP_OPENING, 400);
+              await pushBot(STARTUP_QUESTIONS[0].text, 450);
+            }, 300);
+            return;
+          }
+
+          if (flow === "investor") {
+            setQuestions(INVESTOR_QUESTIONS);
+            setPhase("investor");
+            setStepIndex(0);
+            setTimeout(async () => {
+              await pushBot(
+                "Спасибо за интерес к пулу фонда. Заполните короткую анкету — по пунктам.",
+                400
+              );
+              await pushBot(INVESTOR_QUESTIONS[0].text, 450);
+            }, 300);
+            return;
+          }
+
+          if (flow === "partner") {
+            setQuestions(PARTNER_QUESTIONS);
+            setPhase("partner");
+            setStepIndex(0);
+            setTimeout(async () => {
+              await pushBot(
+                "Рады обсудить партнёрство. Несколько вопросов о вас и формате сотрудничества.",
+                400
+              );
+              await pushBot(PARTNER_QUESTIONS[0].text, 450);
+            }, 300);
+          }
+        }
+
+        function advanceAfterAnswer(storedValue, userDisplay) {
+          if (!currentQuestion || finished) return;
+
+          const qList = questions;
+          const ph = phase;
+          const next = stepIndex + 1;
+          const isStartup = ph === "startup";
+
+          setInput("");
+          setAnswers((prev) => ({
+            ...prev,
+            [currentQuestion.key]: storedValue,
+          }));
+          setMessages((prev) => [
+            ...prev,
+            { role: "user", text: userDisplay },
+          ]);
+          setStepIndex(next);
+
+          setTimeout(() => {
+            if (next < qList.length) {
+              const showFiller =
+                isStartup && next >= 3 && next % 3 === 0;
+              if (showFiller) {
+                const fillerIdx = Math.max(
+                  0,
+                  Math.floor(next / 3) - 1
+                );
+                setMessages((prev) => [
+                  ...prev,
+                  { role: "bot", text: pickFiller(fillerIdx) },
+                ]);
+                setTimeout(() => {
+                  setMessages((prev) => [
+                    ...prev,
+                    { role: "bot", text: qList[next].text },
+                  ]);
+                }, 420);
+              } else {
+                setMessages((prev) => [
+                  ...prev,
+                  { role: "bot", text: qList[next].text },
+                ]);
+              }
+            } else {
+              const thanks =
+                ph === "startup"
+                  ? THANKS_STARTUP
+                  : ph === "investor"
+                    ? THANKS_INVESTOR
+                    : THANKS_PARTNER;
+              setMessages((prev) => [...prev, { role: "bot", text: thanks }]);
+              setFinished(true);
+            }
+          }, 280);
+        }
+
+        function handleSend() {
+          if (!currentQuestion || finished) return;
+          const trimmed = input.trim();
+          if (!trimmed) return;
+          advanceAfterAnswer(trimmed, trimmed);
+        }
+
+        function skipOptionalField() {
+          if (!currentQuestion?.optional || finished) return;
+          advanceAfterAnswer("(пропущено)", "Пропустить");
+        }
+
+        function onKeyDown(e) {
+          if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            handleSend();
+          }
+        }
+
+        const showRoleButtons =
+          phase === "intro" && !roleChosen && !finished;
+        const showComposer =
+          !finished && questions.length > 0 && currentQuestion;
+        const placeholder = finished
+          ? "Диалог завершён"
+          : currentQuestion?.placeholder ?? "Ваш ответ";
+
+        return (
+          <div className="app-card">
+            <header className="header">
+              <div className="header-top">
+                <img
+                  className="header-logo"
+                  src="vc4ak_icon.svg"
+                  alt="Чак VC"
+                  width="44"
+                  height="44"
+                  loading="eager"
+                />
+                <div className="header-text">
+                  <h1>Прямая линия</h1>
+                  <p>
+                    Венчурный фонд Чак VC — ответы сохраняются в браузере до
+                    подключения сервера.
+                  </p>
+                </div>
+              </div>
+            </header>
+
+            <div className="chat" role="log" aria-live="polite">
+              {messages.map((m, i) => (
+                <div
+                  key={i}
+                  className={`msg ${m.role === "bot" ? "bot" : "user"}`}
+                >
+                  <div className="label">
+                    {m.role === "bot" ? "Чак VC" : "Вы"}
+                  </div>
+                  {m.text}
+                </div>
+              ))}
+
+              {showRoleButtons && (
+                <div className="role-buttons" role="group" aria-label="Выбор роли">
+                  <button
+                    type="button"
+                    className="role-btn role-btn--startup"
+                    onClick={() => beginFlow("startup")}
+                  >
+                    {ROLE_LABELS.startup}
+                  </button>
+                  <button
+                    type="button"
+                    className="role-btn role-btn--investor"
+                    onClick={() => beginFlow("investor")}
+                  >
+                    {ROLE_LABELS.investor}
+                  </button>
+                  <button
+                    type="button"
+                    className="role-btn role-btn--partner"
+                    onClick={() => beginFlow("partner")}
+                  >
+                    {ROLE_LABELS.partner}
+                  </button>
+                </div>
+              )}
+
+              <div ref={bottomRef} />
+            </div>
+
+            <div className="composer-wrap">
+              <div
+                className={`composer ${!showComposer || finished ? "disabled" : ""}`}
+              >
+                <textarea
+                  rows={2}
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={onKeyDown}
+                  placeholder={placeholder}
+                  disabled={!showComposer || finished}
+                  aria-label="Ваш ответ"
+                />
+                <button
+                  type="button"
+                  className="btn-send"
+                  onClick={handleSend}
+                  disabled={!canSend}
+                >
+                  Отправить
+                </button>
+              </div>
+              {currentQuestion?.optional && showComposer && (
+                <div className="composer-row">
+                  <button
+                    type="button"
+                    className="secondary"
+                    onClick={skipOptionalField}
+                    disabled={finished}
+                  >
+                    Пропустить (необязательный пункт)
+                  </button>
+                </div>
+              )}
+              {showComposer && !finished && (
+                <p className="hint">
+                  Шаг {stepIndex + 1} из {questions.length}
+                  {phase === "startup" && " · заявка стартапа"}
+                  {phase === "investor" && " · анкета инвестора"}
+                  {phase === "partner" && " · партнёрство"}
+                </p>
+              )}
+            </div>
+          </div>
+        );
+      }
+
+      const root = ReactDOM.createRoot(document.getElementById("root"));
+      root.render(<App />);
+    </script>
+  </body>
+</html>

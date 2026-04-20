@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="1000" height="1000"><style>
+    #light-icon {
+      display: inline;
+    }
+    #dark-icon {
+      display: none;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      #light-icon {
+        display: none;
+      }
+      #dark-icon {
+        display: inline;
+      }
+    }
+  </style><g id="light-icon"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="1000" height="1000"><g><g transform="matrix(1.0256410256410255,0,0,1.0256410256410255,36.95384615384614,5.684341886080802e-14)"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="902.94" height="975"><svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 902.94 975">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #169db0;
+        fill-rule: evenodd;
+      }
+    </style>
+  </defs>
+  <path class="cls-1" d="M58.55,781.95L0,680.61l246-142.06c9.74,39.25,30.4,74.12,58.55,101.34l-246,142.06ZM0,294.39l58.55-101.33,246,142.06c-28.15,27.21-48.81,62.09-58.55,101.34L0,294.39ZM392.95,0h117.03v284c-18.59-5.31-38.23-8.2-58.49-8.2s-39.95,2.89-58.55,8.2V0ZM902.94,680.61l-58.55,101.33-509.92-294.45,509.92-294.45,58.55,101.33-334.47,193.11,334.47,193.11ZM509.99,975h-117.03v-284c18.6,5.31,38.25,8.2,58.55,8.2s39.89-2.89,58.49-8.2v284Z"></path>
+</svg></svg></g></g></svg></g><g id="dark-icon"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="1000" height="1000"><g clip-path="url(#SvgjsClipPath1010)"><rect width="1000" height="1000" fill="#ffffff"></rect><g transform="matrix(0.717948717948718,0,0,0.717948717948718,175.86769230769227,150)"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="902.94" height="975"><svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 902.94 975">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #169db0;
+        fill-rule: evenodd;
+      }
+    </style>
+  <clipPath id="SvgjsClipPath1010"><rect width="1000" height="1000" x="0" y="0" rx="350" ry="350"></rect></clipPath></defs>
+  <path class="cls-1" d="M58.55,781.95L0,680.61l246-142.06c9.74,39.25,30.4,74.12,58.55,101.34l-246,142.06ZM0,294.39l58.55-101.33,246,142.06c-28.15,27.21-48.81,62.09-58.55,101.34L0,294.39ZM392.95,0h117.03v284c-18.59-5.31-38.23-8.2-58.49-8.2s-39.95,2.89-58.55,8.2V0ZM902.94,680.61l-58.55,101.33-509.92-294.45,509.92-294.45,58.55,101.33-334.47,193.11,334.47,193.11ZM509.99,975h-117.03v-284c18.6,5.31,38.25,8.2,58.55,8.2s39.89-2.89,58.49-8.2v284Z"></path>
+</svg></svg></g></g></svg></g></svg>
