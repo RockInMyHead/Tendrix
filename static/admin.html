@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ-панель - Tendrix</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .admin-section {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .user-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .user-row:last-child {
+            border-bottom: none;
+        }
+
+        .badge-admin {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            padding: 0.2rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 0.5rem;
+            color: var(--text-secondary);
+        }
+
+        th {
+            color: var(--text-primary);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="background-beams"></div>
+
+    <div class="app-container">
+        <header class="header">
+            <div class="logo">
+                <div class="logo-icon"></div>
+                <span>Tendrix Admin</span>
+            </div>
+            <a href="/" style="color: var(--text-secondary); text-decoration: none;">← Вернуться</a>
+        </header>
+
+        <main>
+            <div class="admin-section">
+                <h3>🎟 Генерация промокода</h3>
+                <form id="promoForm" style="display: flex; gap: 1rem; margin-top: 1rem;" onsubmit="createPromo(event)">
+                    <input type="text" id="promoCode" placeholder="Например: DISC50" required
+                        style="flex:1; padding: 0.5rem; background: rgba(0,0,0,0.2); border: 1px solid var(--border); color: white; border-radius: 0.5rem;">
+                    <input type="text" id="promoDesc" placeholder="Описание"
+                        style="flex:2; padding: 0.5rem; background: rgba(0,0,0,0.2); border: 1px solid var(--border); color: white; border-radius: 0.5rem;">
+                    <button type="submit" class="search-btn" style="width: auto; padding: 0 1.5rem;">Создать</button>
+                </form>
+                <div id="promoMsg" style="margin-top: 0.5rem; font-size: 0.9rem;"></div>
+            </div>
+
+            <div class="admin-section">
+                <h3>👥 Пользователи</h3>
+                <div style="overflow-x: auto; margin-top: 1rem;">
+                    <table id="usersTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Логин</th>
+                                <th>Email</th>
+                                <th>Роль</th>
+                                <th style="text-align:right">Токены OpenAI</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const token = localStorage.getItem('access_token');
+        if (!token) window.location.href = '/auth';
+
+        async function loadUsers() {
+            try {
+                const res = await fetch('/admin/users', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.status === 403) {
+                    alert("Доступ запрещен. Вы не администратор.");
+                    window.location.href = '/';
+                    return;
+                }
+                const users = await res.json();
+                const tbody = document.querySelector('#usersTable tbody');
+                tbody.innerHTML = users.map(u => `
+                    <tr>
+                        <td>${u.id}</td>
+                        <td>${u.username}</td>
+                        <td>${u.email || '—'}</td>
+                        <td>${u.is_admin ? '<span class="badge-admin">Admin</span>' : 'User'}</td>
+                        <td style="text-align:right;font-variant-numeric:tabular-nums">${(u.openai_tokens_total ?? 0).toLocaleString('ru-RU')}</td>
+                        <td><button class="search-btn" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;" onclick="deleteUser(${u.id}, '${u.username.replace(/'/g, "\\'")}')">Удалить</button></td>
+                    </tr>
+                `).join('');
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        async function createPromo(e) {
+            e.preventDefault();
+            const code = document.getElementById('promoCode').value;
+            const desc = document.getElementById('promoDesc').value;
+
+            try {
+                const res = await fetch('/admin/promocodes', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ code, description: desc })
+                });
+
+                const data = await res.json();
+                if (res.ok) {
+                    document.getElementById('promoMsg').textContent = `Промокод ${data.code} создан!`;
+                    document.getElementById('promoMsg').style.color = '#10b981';
+                    e.target.reset();
+                } else {
+                    document.getElementById('promoMsg').textContent = data.detail;
+                    document.getElementById('promoMsg').style.color = '#ef4444';
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        async function deleteUser(id, username) {
+            if (!confirm('Удалить пользователя "' + username + '"?')) return;
+            try {
+                const res = await fetch('/admin/users/' + id, { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + token } });
+                const data = await res.json().catch(() => ({}));
+                if (res.ok) loadUsers();
+                else alert(data.detail || 'Ошибка удаления');
+            } catch (e) { console.error(e); }
+        }
+        loadUsers();
+    </script>
+</body>
+
+</html>

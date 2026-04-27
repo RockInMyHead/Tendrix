@@ -1,0 +1,15 @@
+[Unit]
+Description=Tendrix — Telegram-бот (aiogram polling)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/root/Tendrix
+EnvironmentFile=-/root/Tendrix/.env
+ExecStart=/root/Tendrix/.venv/bin/python3 -u bot.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,357 @@
+[
+  {
+    "id": "astgoz",
+    "label": "AST-GOZ",
+    "base_url": "https://astgoz.ru",
+    "patterns": [
+      "tender",
+      "zakup",
+      "auction",
+      "procedure",
+      "gos"
+    ],
+    "max_items": 30,
+    "sleep_s": 0.2
+  },
+  {
+    "id": "zakazrf_site",
+    "label": "ZakazRF-Site",
+    "base_url": "https://etp.zakazrf.ru",
+    "patterns": [
+      "tender",
+      "zakup",
+      "purchase",
+      "auction",
+      "procedure"
+    ],
+    "max_items": 30,
+    "sleep_s": 0.2
+  },
+  {
+    "id": "tektorg_site",
+    "label": "TEK-Torg-Site",
+    "base_url": "https://www.tektorg.ru",
+    "patterns": [
+      "tender",
+      "zakup",
+      "purchase",
+      "auction",
+      "procedure"
+    ],
+    "max_items": 30,
+    "sleep_s": 0.2
+  },
+  {
+    "id": "zakupki_mos",
+    "label": "Zakupki-Mos",
+    "base_url": "https://zakupki.mos.ru",
+    "patterns": [
+      "tender",
+      "contract",
+      "purchase",
+      "zakup"
+    ],
+    "max_items": 30,
+    "sleep_s": 0.2
+  },
+  {
+    "id": "berezka_eat",
+    "label": "EAT-Berezka",
+    "base_url": "https://agregatoreat.ru",
+    "patterns": [
+      "tender",
+      "purchase",
+      "zakup",
+      "trade"
+    ],
+    "max_items": 30,
+    "sleep_s": 0.2
+  },
+  {
+    "id": "market_mosreg",
+    "label": "Market-Mosreg",
+    "base_url": "https://market.mosreg.ru",
+    "patterns": [
+      "Trade",
+      "tender",
+      "zakup",
+      "purchase"
+    ],
+    "max_items": 30,
+    "sleep_s": 0.2
+  },
+  {
+    "id": "estore_spb",
+    "label": "Estore-SPB",
+    "base_url": "https://estore.gz-spb.ru",
+    "patterns": [
+      "tender",
+      "zakup",
+      "purchase",
+      "procedure",
+      "auction"
+    ],
+    "max_items": 30,
+    "sleep_s": 0.2
+  },
+  {
+    "id": "zakupki_altai",
+    "label": "Zakupki-Altai",
+    "base_url": "https://zakupki-altai.ru",
+    "patterns": [
+      "tender",
+      "zakup",
+      "purchase",
+      "auction",
+      "notice"
+    ],
+    "max_items": 30,
+    "sleep_s": 0.2
+  },
+  {
+    "id": "burzakup",
+    "label": "BurZakup",
+    "base_url": "https://burzakup.ru",
+    "patterns": [
+      "tender",
+      "zakup",
+      "purchase",
+      "auction",
+      "notice"
+    ],
+    "max_items": 30,
+    "sleep_s": 0.2
+  },
+  {
+    "id": "gz_gov35",
+    "label": "GZ-GOV35",
+    "base_url": "https://gz.gov35.ru",
+    "patterns": [
+      "tender",
+      "zakup",
+      "purchase",
+      "auction",
+      "notice"
+    ],
+    "max_items": 30,
+    "sleep_s": 0.2
+  },
+  {
+    "id": "b2b_center",
+    "label": "B2B-Center",
+    "base_url": "https://www.b2b-center.ru",
+    "patterns": [
+      "tender",
+      "purchase",
+      "trade",
+      "auction",
+      "request"
+    ],
+    "max_items": 30,
+    "sleep_s": 0.2
+  },
+  {
+    "id": "fabrikant",
+    "label": "Fabrikant",
+    "base_url": "https://www.fabrikant.ru",
+    "patterns": [
+      "tender",
+      "purchase",
+      "trade",
+      "auction",
+      "request"
+    ],
+    "max_items": 30,
+    "sleep_s": 0.2
+  },
+  {
+    "id": "otc",
+    "label": "OTC",
+    "base_url": "https://otc.ru",
+    "patterns": [
+      "tender",
+      "purchase",
+      "trade",
+      "auction",
+      "request"
+    ],
+    "max_items": 30,
+    "sleep_s": 0.2
+  },
+  {
+    "id": "tender_pro",
+    "label": "Tender-Pro",
+    "base_url": "https://tender.pro",
+    "patterns": [
+      "tender",
+      "purchase",
+      "trade",
+      "auction",
+      "request"
+    ],
+    "max_items": 30,
+    "sleep_s": 0.2
+  },
+  {
+    "id": "onlinecontract",
+    "label": "OnlineContract",
+    "base_url": "https://onlinecontract.ru",
+    "patterns": [
+      "tender",
+      "purchase",
+      "trade",
+      "auction",
+      "request"
+    ],
+    "max_items": 30,
+    "sleep_s": 0.2
+  },
+  {
+    "id": "erus",
+    "label": "ERUS",
+    "base_url": "https://erus.ru",
+    "patterns": [
+      "tender",
+      "purchase",
+      "trade",
+      "auction",
+      "request"
+    ],
+    "max_items": 30,
+    "sleep_s": 0.2
+  },
+  {
+    "id": "setonline",
+    "label": "SETonline",
+    "base_url": "https://www.setonline.ru",
+    "patterns": [
+      "tender",
+      "purchase",
+      "trade",
+      "auction",
+      "request"
+    ],
+    "max_items": 30,
+    "sleep_s": 0.2
+  },
+  {
+    "id": "rb2b",
+    "label": "RB2B",
+    "base_url": "https://rb2b.ru",
+    "patterns": [
+      "tender",
+      "purchase",
+      "trade",
+      "auction",
+      "request"
+    ],
+    "max_items": 30,
+    "sleep_s": 0.2
+  },
+  {
+    "id": "rosneft",
+    "label": "Rosneft",
+    "base_url": "https://zakupki.rosneft.ru",
+    "patterns": [
+      "tender",
+      "zakup",
+      "purchase",
+      "auction"
+    ],
+    "max_items": 30,
+    "sleep_s": 0.2
+  },
+  {
+    "id": "gazprom",
+    "label": "Gazprom",
+    "base_url": "https://www.gazprom.ru",
+    "patterns": [
+      "tender",
+      "zakup",
+      "purchase",
+      "auction"
+    ],
+    "max_items": 30,
+    "sleep_s": 0.2
+  },
+  {
+    "id": "gazprom_neft",
+    "label": "Gazprom-Neft",
+    "base_url": "https://zakupki.gazprom-neft.ru",
+    "patterns": [
+      "tender",
+      "zakup",
+      "purchase",
+      "auction"
+    ],
+    "max_items": 30,
+    "sleep_s": 0.2
+  },
+  {
+    "id": "spbex",
+    "label": "SPBEX",
+    "base_url": "https://www.spbex.ru",
+    "patterns": [
+      "tender",
+      "zakup",
+      "purchase",
+      "auction",
+      "procurement"
+    ],
+    "max_items": 30,
+    "sleep_s": 0.2
+  },
+  {
+    "id": "eshoprzd",
+    "label": "EshopRZD",
+    "base_url": "https://eshoprzd.ru",
+    "patterns": [
+      "tender",
+      "zakup",
+      "purchase",
+      "auction",
+      "offer"
+    ],
+    "max_items": 30,
+    "sleep_s": 0.2
+  },
+  {
+    "id": "severstal",
+    "label": "Severstal",
+    "base_url": "https://supplier.severstal.com",
+    "patterns": [
+      "tender",
+      "zakup",
+      "purchase",
+      "auction"
+    ],
+    "max_items": 30,
+    "sleep_s": 0.2
+  },
+  {
+    "id": "evraz",
+    "label": "Evraz",
+    "base_url": "https://tender.evraz.com",
+    "patterns": [
+      "tender",
+      "zakup",
+      "purchase",
+      "auction"
+    ],
+    "max_items": 30,
+    "sleep_s": 0.2
+  },
+  {
+    "id": "tatneft",
+    "label": "Tatneft",
+    "base_url": "https://zakupki.tatneft.ru",
+    "patterns": [
+      "tender",
+      "zakup",
+      "purchase",
+      "auction"
+    ],
+    "max_items": 30,
+    "sleep_s": 0.2
+  }
+]

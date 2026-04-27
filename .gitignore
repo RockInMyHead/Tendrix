@@ -1,0 +1,42 @@
+# Environment and secrets
+.env
+.env.local
+*.pem
+
+# SSH private keys (PuTTY / OpenSSH)
+key/
+
+# SQLite
+*.db
+*.db-shm
+*.db-wal
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+*.egg-info/
+dist/
+build/
+
+# Node (frontend dev)
+temp_frontend/node_modules/
+
+# OS / IDE
+.DS_Store
+.idea/
+.vscode/
+.cursor/
+
+# Background daemon (nohup)
+logs/
+
+# Archives / deploy artifacts
+*.tar.gz
+
+# Duplicate / backup tree
+fz_parser 2/
